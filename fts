@@ -1,0 +1,19 @@
+from sklearn.metrics import accuracy_score
+
+def ablation_study(model, X_train, y_train, X_test, y_test, features):
+    baseline_model = model.fit(X_train, y_train)
+    baseline_pred = baseline_model.predict(X_test)
+    baseline_acc = accuracy_score(y_test, baseline_pred)
+    print(f"Baseline accuracy: {baseline_acc}")
+
+    for feature in features:
+        X_train_new = X_train.drop(columns=[feature])
+        X_test_new = X_test.drop(columns=[feature])
+        new_model = model.fit(X_train_new, y_train)
+        new_pred = new_model.predict(X_test_new)
+        new_acc = accuracy_score(y_test, new_pred)
+        print(f"Accuracy without {feature}: {new_acc}")
+
+# Example usage
+features_to_test = ['feature1', 'feature2', 'feature3']
+ablation_study(gbm, X_train, y_train, X_test, y_test, features_to_test)
