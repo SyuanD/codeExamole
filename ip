@@ -1,0 +1,16 @@
+# Extract feature importances by gain
+feature_importances_gain = gbm.feature_importance(importance_type='gain')
+feature_names = X_train.columns
+importance_df = pd.DataFrame({'feature': feature_names, 'importance': feature_importances_gain})
+
+# Select the top 50 features by gain
+top_50_features = importance_df.nlargest(50, 'importance')['feature']
+
+# Compute the correlation matrix for the top 50 features
+correlation_matrix = df[top_50_features].corr()
+
+# Plot the correlation matrix
+plt.figure(figsize=(20, 15))
+sns.heatmap(correlation_matrix, annot=True, fmt=".2f", cmap='coolwarm', linewidths=0.5)
+plt.title('Correlation Matrix of Top 50 Features by Gain')
+plt.show()
