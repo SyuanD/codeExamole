@@ -14,3 +14,24 @@ plt.figure(figsize=(20, 15))
 sns.heatmap(correlation_matrix, annot=True, fmt=".2f", cmap='coolwarm', linewidths=0.5)
 plt.title('Correlation Matrix of Top 50 Features by Gain')
 plt.show()
+
+# Identify highly correlated features (correlation > 0.8)
+def get_redundant_pairs(df):
+    pairs_to_drop = set()
+    cols = df.columns
+    for i in range(0, df.shape[1]):
+        for j in range(0, i+1):
+            pairs_to_drop.add((cols[i], cols[j]))
+    return pairs_to_drop
+
+def get_top_abs_correlations(df, threshold=0.8):
+    au_corr = df.corr().abs().unstack()
+    labels_to_drop = get_redundant_pairs(df)
+    au_corr = au_corr.drop(labels=labels_to_drop).sort_values(ascending=False)
+    return au_corr[au_corr > threshold]
+
+# Get pairs of highly correlated features
+high_corr_pairs = get_top_abs_correlations(df[top_50_features], threshold=0.8)
+
+# List of highly correlated feature pairs
+print("Highly correlated pairs (correlation > 0.8):\n", high_corr_pairs)
