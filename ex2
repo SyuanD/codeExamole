@@ -1,0 +1,49 @@
+import lightgbm as lgb
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+
+# Sample data (assuming you have a DataFrame `df` with your features and target)
+# Here, we'll create a sample DataFrame for demonstration purposes.
+np.random.seed(42)
+df = pd.DataFrame(np.random.rand(1000, 60), columns=[f'feature_{i}' for i in range(60)])
+df['target'] = np.random.choice([0, 1], size=1000)
+
+# Split the data into train and test sets
+X_train, X_test, y_train, y_test = train_test_split(df.drop(columns=['target']), df['target'], test_size=0.2, random_state=42)
+
+# Train the LightGBM model
+train_data = lgb.Dataset(X_train, label=y_train)
+valid_data = lgb.Dataset(X_test, label=y_test, reference=train_data)
+
+params = {
+    'objective': 'binary',
+    'metric': 'binary_logloss',
+    'boosting_type': 'gbdt',
+    'verbose': -1
+}
+
+gbm = lgb.train(params,
+                train_data,
+                num_boost_round=100,
+                valid_sets=[train_data, valid_data],
+                valid_names=['train', 'valid'])
+
+# Extract feature importances
+feature_importances = gbm.feature_importance()
+feature_names = X_train.columns
+importance_df = pd.DataFrame({'feature': feature_names, 'importance': feature_importances})
+
+# Select the top 50 features
+top_50_features = importance_df.nlargest(50, 'importance')['feature']
+
+# Compute the correlation matrix for the top 50 features
+correlation_matrix = df[top_50_features].corr()
+
+# Plot the correlation matrix
+plt.figure(figsize=(20, 15))
+sns.heatmap(correlation_matrix, annot=True, fmt=".2f", cmap='coolwarm', linewidths=0.5)
+plt.title('Correlation Matrix of Top 50 Features')
+plt.show()
