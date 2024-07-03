@@ -17,3 +17,23 @@ def ablation_study(model, X_train, y_train, X_test, y_test, features):
 # Example usage
 features_to_test = ['feature1', 'feature2', 'feature3']
 ablation_study(gbm, X_train, y_train, X_test, y_test, features_to_test)
+
+feature_names = X_train.columns
+importance_df = pd.DataFrame({'feature': feature_names, 'importance': feature_importances_gain})
+
+# Select the top 50 features by gain
+top_50_features = importance_df.nlargest(50, 'importance')['feature']
+
+# Filter the training and test sets to include only the top 50 features
+X_train_top50 = X_train[top_50_features]
+X_test_top50 = X_test[top_50_features]
+
+# Explain the model's predictions using SHAP for the top 50 features
+explainer = shap.Explainer(gbm, X_train_top50)
+shap_values = explainer(X_test_top50)
+
+# Summary plot of SHAP values for the top 50 features
+shap.summary_plot(shap_values, X_test_top50)
+
+# Force plot for a single prediction for the top 50 features
+shap.force_plot(explainer.expected_value, shap_values[0], X_test_top50.iloc[0])
