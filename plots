@@ -50,3 +50,14 @@ plt.title('Difference Plot of Two Sets of Values')
 plt.legend()
 plt.grid(True)
 plt.show()
+
+
+Components of a SHAP Summary Plot
+Feature Importance:
+
+Order of Features: Features are listed on the y-axis in descending order of their importance. The most important feature is at the top.
+Magnitude of SHAP Values: The x-axis represents the range of SHAP values. The further a point is from zero, the greater the impact of that feature on the prediction.
+Impact on Prediction:
+
+SHAP Values: Each dot represents a SHAP value for an instance in the dataset. Positive SHAP values indicate that the feature value contributes to a higher predicted value (pushing the prediction towards the positive class), while negative SHAP values indicate the opposite.
+Color Coding: The color of the dots represents the feature value (e.g., blue for low values and red for high values). This helps to understand how different values of a feature impact the model's predictions.
