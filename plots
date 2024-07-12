@@ -1,0 +1,52 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Generate some example data
+np.random.seed(42)
+values1 = np.random.normal(loc=50, scale=10, size=100)
+values2 = values1 + np.random.normal(loc=0, scale=5, size=100)
+
+# Scatter Plot
+plt.figure(figsize=(10, 6))
+plt.scatter(values1, values2, alpha=0.6)
+plt.plot([min(values1), max(values1)], [min(values1), max(values1)], color='red', linestyle='--')
+plt.xlabel('Values Set 1')
+plt.ylabel('Values Set 2')
+plt.title('Scatter Plot of Two Sets of Values')
+plt.grid(True)
+plt.show()
+
+# Line Plot
+plt.figure(figsize=(10, 6))
+plt.plot(values1, label='Values Set 1')
+plt.plot(values2, label='Values Set 2', alpha=0.7)
+plt.xlabel('Index')
+plt.ylabel('Value')
+plt.title('Line Plot of Two Sets of Values')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# Histogram
+plt.figure(figsize=(10, 6))
+sns.histplot(values1, kde=True, label='Values Set 1', color='blue', alpha=0.6)
+sns.histplot(values2, kde=True, label='Values Set 2', color='orange', alpha=0.6)
+plt.xlabel('Value')
+plt.ylabel('Frequency')
+plt.title('Histogram of Two Sets of Values')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# Difference Plot
+differences = values2 - values1
+plt.figure(figsize=(10, 6))
+plt.plot(differences, label='Differences (Values2 - Values1)')
+plt.axhline(0, color='red', linestyle='--')
+plt.xlabel('Index')
+plt.ylabel('Difference')
+plt.title('Difference Plot of Two Sets of Values')
+plt.legend()
+plt.grid(True)
+plt.show()
