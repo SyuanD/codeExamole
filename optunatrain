@@ -37,3 +37,35 @@ def objective(trial):
     accuracy = accuracy_score(y_val, y_pred_class)
     
     return accuracy
+#########
+study = optuna.create_study(direction='maximize')  # Maximizing accuracy
+study.optimize(objective, n_trials=100)
+
+print(f'Best trial: {study.best_trial.params}')
+
+
+##########
+# Extract the best parameters
+best_params = study.best_trial.params
+
+# Add fixed parameters that are not tuned
+best_params['objective'] = 'multiclass'
+best_params['num_class'] = 3
+best_params['metric'] = 'multi_logloss'
+best_params['boosting_type'] = 'gbdt'
+
+# Create dataset for LightGBM with class weights
+weight = np.array([class_weights[cls] for cls in y_train])
+train_data = lgb.Dataset(X_train, label=y_train, weight=weight)
+val_data = lgb.Dataset(X_val, label=y_val, reference=train_data)
+
+# Train the final model
+final_model = lgb.train(best_params, train_data, valid_sets=[val_data], early_stopping_rounds=10, verbose_eval=False)
+
+# Predict and evaluate the final model
+y_pred = final_model.predict(X_val, num_iteration=final_model.best_iteration)
+y_pred_class = y_pred.argmax(axis=1)
+accuracy = accuracy_score(y_val, y_pred_class)
+
+print(f'Final model accuracy: {accuracy}')
+
